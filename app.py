@@ -109,7 +109,9 @@ def predict():
     except Exception as e:
         print("ERROR:", str(e))
         return jsonify({"error": "Server error"}), 500
-
+@app.route("/")
+def home():
+    return "Backend is running 🚀"
 
 # =============================
 # RUN
