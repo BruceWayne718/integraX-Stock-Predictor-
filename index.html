@@ -624,22 +624,31 @@
         // Fetch stock data using Yahoo Finance API alternative
         
 async function fetchStockData(symbol) {
-    const countryId = document.getElementById('country').value;
-    const duration = document.getElementById('duration').value;
-
-    const countryName = COUNTRY_CONFIG[countryId]?.name || "";
-
-    const response = await fetch("https://integrax-stock-predictor.onrender.com/", {
+    const response = await fetch("https://integrackstockpredictor.onrender.com/predict", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
         },
         body: JSON.stringify({
             symbol: symbol,
-            country: countryName,
-            duration: duration
+            country: currentConfig.name,
+            duration: "7"
         })
     });
+
+    const data = await response.json();
+
+    if (data.error) {
+        alert(data.error);
+        throw new Error(data.error);
+    }
+
+    return {
+        symbol: data.symbol,
+        prices: data.future_preds,
+        dates: data.future_preds.map((_, i) => `Day ${i+1}`)
+    };
+}
 
     const data = await response.json();
 
@@ -654,7 +663,7 @@ async function fetchStockData(symbol) {
         dates: [],
         volumes: []
     };
-}
+
         // Generate simulated stock data
         function generateSimulatedData(symbol) {
             const days = 500;
