@@ -9,7 +9,7 @@
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
   gtag('config', 'G-2D2G6QTP3T');
-</script>>
+</script>
     
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -574,18 +574,25 @@ document.getElementById('country').addEventListener('change', function() {
     const countryId = this.value;
     const shareTypeSelect = document.getElementById('shareType');
 
-    // RESET DROPDOWN
+    // RESET FIRST
     shareTypeSelect.innerHTML = '<option value="">-- Select Share Type --</option>';
+    shareTypeSelect.value = "";
 
-    // FIX: ensure config exists
-    if (!COUNTRY_CONFIG[countryId]) {
-        console.log("Invalid country selected");
-        return;
+    if (!countryId) return;
+
+    if (COUNTRY_CONFIG[countryId]) {
+        currentConfig = COUNTRY_CONFIG[countryId];
+
+        const symbolMap = currentConfig.symbolMap;
+
+        Object.entries(symbolMap).forEach(([name, symbol]) => {
+            const option = document.createElement('option');
+            option.value = symbol;
+            option.textContent = name;
+            shareTypeSelect.appendChild(option);
+        });
     }
-
-    currentConfig = COUNTRY_CONFIG[countryId];
-
-    const symbolMap = currentConfig.symbolMap;
+});
 
     // FIX: safe loop
     Object.keys(symbolMap).forEach(name => {
@@ -594,7 +601,7 @@ document.getElementById('country').addEventListener('change', function() {
         option.textContent = name;
         shareTypeSelect.appendChild(option);
     });
-});
+
         // Main analysis function
         async function analyzeStock() {
             const country = document.getElementById('country').value;
@@ -1268,5 +1275,9 @@ async function fetchStockData(symbol) {
             });
         }
     </script>
+    window.onload = function() {
+    document.getElementById("country").value = "";
+    document.getElementById("shareType").innerHTML = '<option value="">-- Select Share Type --</option>';
+};
 </body>
 </html>
