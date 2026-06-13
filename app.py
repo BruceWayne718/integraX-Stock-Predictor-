@@ -48,7 +48,7 @@ def predict():
         # FETCH DATA
         # =============================
         stock = yf.Ticker(symbol)
-        hist = stock.history(period="6mo")
+        hist = stock.history(period="6mo", interval="1d")
 
         if hist.empty or "Close" not in hist:
             return jsonify({"error": "Invalid stock or no data available"}), 400

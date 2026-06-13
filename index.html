@@ -622,14 +622,39 @@
         }
 
         // Fetch stock data using Yahoo Finance API alternative
-        async function fetchStockData(symbol) {
-            // Simulated stock data for demonstration
-            // In production, you would use a real API like Alpha Vantage, Finnhub, or Yahoo Finance
-            
-            const data = await generateSimulatedData(symbol);
-            return data;
-        }
+        
+async function fetchStockData(symbol) {
+    const countryId = document.getElementById('country').value;
+    const duration = document.getElementById('duration').value;
 
+    const countryName = COUNTRY_CONFIG[countryId]?.name || "";
+
+    const response = await fetch("http://127.0.0.1:5000/predict", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            symbol: symbol,
+            country: countryName,
+            duration: duration
+        })
+    });
+
+    const data = await response.json();
+
+    if (data.error) {
+        throw new Error(data.error);
+    }
+
+    // 🔥 IMPORTANT: Convert backend format → your frontend format
+    return {
+        symbol: data.symbol,
+        prices: [data.last_price, ...data.future_preds],
+        dates: [],
+        volumes: []
+    };
+}
         // Generate simulated stock data
         function generateSimulatedData(symbol) {
             const days = 500;
