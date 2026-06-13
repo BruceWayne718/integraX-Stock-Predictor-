@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -392,7 +393,7 @@ window.onload = function() {
         <div class="input-section">
             <div class="form-group">
                 <label for="country">Select Your Stock Market / Country</label>
-                <select id="shareType"></select>
+                <select id="country" onchange="updateCompanies()"></select>
                     <option value="">-- Choose Country --</option>
                     <option value="1">India (NSE/BSE)</option>
                     <option value="2">USA (NYSE/NASDAQ)</option>
@@ -438,167 +439,79 @@ window.onload = function() {
         </div>
     </div>
 
-    <script>
+    
         // Country configuration matching the Python code
-        const COUNTRY_CONFIG = {
-            '1': {
-                name: 'India',
-                currency: 'Rs.',
-                currencyCode: 'INR',
-                exchange: 'NSE/BSE',
-                suffix: '.NS',
-                symbolMap: {
-                    'TCS': 'TCS.NS', 'Reliance': 'RELIANCE.NS', 'Infosys': 'INFY.NS',
-                    'HDFC Bank': 'HDFCBANK.NS', 'ICICI Bank': 'ICICIBANK.NS', 'SBI': 'SBIN.NS',
-                    'Bharti Airtel': 'BHARTIARTL.NS', 'ITC': 'ITC.NS', 'Wipro': 'WIPRO.NS',
-                    'HCL Tech': 'HCLTECH.NS', 'Bajaj Finance': 'BAJFINANCE.NS', 'Maruti': 'MARUTI.NS',
-                    'Titan': 'TITAN.NS', 'Asian Paint': 'ASIANPAINT.NS', 'Adani': 'ADANIENT.NS',
-                    'ONGC': 'ONGC.NS', 'NTPC': 'NTPC.NS', 'PowerGrid': 'POWERGRID.NS'
-                }
-            },
-            '2': {
-                name: 'USA',
-                currency: '$',
-                currencyCode: 'USD',
-                exchange: 'NYSE/NASDAQ',
-                suffix: '',
-                symbolMap: {
-                    'Apple': 'AAPL', 'Microsoft': 'MSFT', 'Google': 'GOOGL', 'Amazon': 'AMZN',
-                    'Meta': 'META', 'Tesla': 'TSLA', 'NVIDIA': 'NVDA', 'Netflix': 'NFLX',
-                    'AMD': 'AMD', 'Intel': 'INTC', 'Salesforce': 'CRM', 'Oracle': 'ORCL',
-                    'IBM': 'IBM', 'Adobe': 'ADBE', 'PayPal': 'PYPL', 'Uber': 'UBER',
-                    'JPMorgan': 'JPM', 'Bank of America': 'BAC', 'Visa': 'V', 'Mastercard': 'MA',
-                    'Johnson & Johnson': 'JNJ', 'Pfizer': 'PFE', 'Walmart': 'WMT', 'Coca-Cola': 'KO',
-                    'Nike': 'NKE', 'Disney': 'DIS', 'Boeing': 'BA', 'ExxonMobil': 'XOM'
-                }
-            },
-            '3': {
-                name: 'United Kingdom',
-                currency: '£',
-                currencyCode: 'GBP',
-                exchange: 'LSE',
-                suffix: '.L',
-                symbolMap: {
-                    'HSBC': 'HSBA.L', 'BP': 'BP.L', 'Shell': 'SHEL.L', 'AstraZeneca': 'AZN.L',
-                    'GSK': 'GSK.L', 'Unilever': 'ULVR.L', 'Barclays': 'BARC.L', 'Lloyds': 'LLOY.L',
-                    'Vodafone': 'VOD.L', 'BT Group': 'BT-A.L', 'Diageo': 'DGE.L', 'Rio Tinto': 'RIO.L'
-                }
-            },
-            '4': {
-                name: 'Germany',
-                currency: '€',
-                currencyCode: 'EUR',
-                exchange: 'XETRA',
-                suffix: '.DE',
-                symbolMap: {
-                    'SAP': 'SAP.DE', 'Siemens': 'SIE.DE', 'Volkswagen': 'VOW3.DE', 'BMW': 'BMW.DE',
-                    'Mercedes-Benz': 'MBG.DE', 'Allianz': 'ALV.DE', 'BASF': 'BAS.DE', 'Bayer': 'BAYN.DE',
-                    'Deutsche Bank': 'DBK.DE', 'Adidas': 'ADS.DE'
-                }
-            },
-            '5': {
-                name: 'France',
-                currency: '€',
-                currencyCode: 'EUR',
-                exchange: 'Euronext Paris',
-                suffix: '.PA',
-                symbolMap: {
-                    'LVMH': 'MC.PA', 'Hermes': 'RMS.PA', "L'Oreal": 'OR.PA', 'TotalEnergies': 'TTE.PA',
-                    'BNP Paribas': 'BNP.PA', 'Airbus': 'AIR.PA', 'Sanofi': 'SAN.PA', 'AXA': 'CS.PA'
-                }
-            },
-            '6': {
-                name: 'Japan',
-                currency: '¥',
-                currencyCode: 'JPY',
-                exchange: 'TSE',
-                suffix: '.T',
-                symbolMap: {
-                    'Toyota': '7203.T', 'Sony': '6758.T', 'SoftBank': '9984.T', 'Nintendo': '7974.T',
-                    'Honda': '7267.T', 'Panasonic': '6752.T', 'Mitsubishi': '8058.T', 'Canon': '7751.T'
-                }
-            },
-            '7': {
-                name: 'China',
-                currency: '$',
-                currencyCode: 'USD',
-                exchange: 'NYSE/NASDAQ (ADR)',
-                suffix: '',
-                symbolMap: {
-                    'Alibaba': 'BABA', 'JD.com': 'JD', 'Baidu': 'BIDU', 'NIO': 'NIO',
-                    'XPeng': 'XPEV', 'Li Auto': 'LI', 'PinDuoDuo': 'PDD', 'NetEase': 'NTES'
-                }
-            },
-            '8': {
-                name: 'Australia',
-                currency: 'A$',
-                currencyCode: 'AUD',
-                exchange: 'ASX',
-                suffix: '.AX',
-                symbolMap: {
-                    'BHP': 'BHP.AX', 'Commonwealth Bank': 'CBA.AX', 'ANZ': 'ANZ.AX', 'NAB': 'NAB.AX',
-                    'Westpac': 'WBC.AX', 'Telstra': 'TLS.AX', 'Woolworths': 'WOW.AX', 'CSL': 'CSL.AX'
-                }
-            },
-            '9': {
-                name: 'Canada',
-                currency: 'C$',
-                currencyCode: 'CAD',
-                exchange: 'TSX',
-                suffix: '.TO',
-                symbolMap: {
-                    'Shopify': 'SHOP.TO', 'Royal Bank': 'RY.TO', 'TD Bank': 'TD.TO', 'Scotiabank': 'BNS.TO',
-                    'BMO': 'BMO.TO', 'Suncor': 'SU.TO', 'Enbridge': 'ENB.TO', 'CNR': 'CNR.TO'
-                }
-            },
-            '10': {
-                name: 'Global',
-                currency: '$',
-                currencyCode: 'USD',
-                exchange: 'Global',
-                suffix: '',
-                symbolMap: {
-                    'S&P 500': 'SPY', 'NASDAQ': 'QQQ', 'Bitcoin': 'BTC-USD', 'Ethereum': 'ETH-USD',
-                    'Gold': 'GLD', 'Silver': 'SLV', 'Oil': 'USO', 'VTI': 'VTI'
-                }
-            }
-        };
-
-        let currentConfig = null;
-
-        // Update share type dropdown when country changes
         
-document.getElementById('country').addEventListener('change', function() {
-    const countryId = this.value;
-    const shareTypeSelect = document.getElementById('shareType');
-
-    // RESET FIRST
-    shareTypeSelect.innerHTML = '<option value="">-- Select Share Type --</option>';
-    shareTypeSelect.value = "";
-
-    if (!countryId) return;
-
-    if (COUNTRY_CONFIG[countryId]) {
-        currentConfig = COUNTRY_CONFIG[countryId];
-
-        const symbolMap = currentConfig.symbolMap;
-
-        Object.entries(symbolMap).forEach(([name, symbol]) => {
-            const option = document.createElement('option');
-            option.value = symbol;
-            option.textContent = name;
-            shareTypeSelect.appendChild(option);
-        });
+<script>
+const markets = {
+    '1': {
+        name: 'India',
+        symbolMap: {
+            'TCS': 'TCS.NS', 'Reliance': 'RELIANCE.NS', 'Infosys': 'INFY.NS',
+            'HDFC Bank': 'HDFCBANK.NS', 'ICICI Bank': 'ICICIBANK.NS', 'SBI': 'SBIN.NS',
+            'Bharti Airtel': 'BHARTIARTL.NS', 'ITC': 'ITC.NS', 'Wipro': 'WIPRO.NS',
+            'HCL Tech': 'HCLTECH.NS', 'Bajaj Finance': 'BAJFINANCE.NS', 'Maruti': 'MARUTI.NS',
+            'Titan': 'TITAN.NS', 'Asian Paint': 'ASIANPAINT.NS', 'Adani': 'ADANIENT.NS',
+            'ONGC': 'ONGC.NS', 'NTPC': 'NTPC.NS', 'PowerGrid': 'POWERGRID.NS'
+        }
+    },
+    '2': {
+        name: 'USA',
+        symbolMap: {
+            'Apple': 'AAPL', 'Microsoft': 'MSFT', 'Google': 'GOOGL', 'Amazon': 'AMZN',
+            'Meta': 'META', 'Tesla': 'TSLA', 'NVIDIA': 'NVDA', 'Netflix': 'NFLX',
+            'AMD': 'AMD', 'Intel': 'INTC', 'Salesforce': 'CRM', 'Oracle': 'ORCL',
+            'IBM': 'IBM', 'Adobe': 'ADBE', 'PayPal': 'PYPL', 'Uber': 'UBER',
+            'JPMorgan': 'JPM', 'Bank of America': 'BAC', 'Visa': 'V', 'Mastercard': 'MA'
+        }
+    },
+    '3': {
+        name: 'UK',
+        symbolMap: {
+            'HSBC': 'HSBA.L', 'BP': 'BP.L', 'Shell': 'SHEL.L', 'AstraZeneca': 'AZN.L'
+        }
     }
-});
+    // 👉 You can paste remaining countries SAME FORMAT (no issue)
+};
 
-    // FIX: safe loop
-    Object.keys(symbolMap).forEach(name => {
-        const option = document.createElement('option');
-        option.value = symbolMap[name];
+function updateCompanies() {
+    const country = document.getElementById("country").value;
+    const shareDropdown = document.getElementById("shareType");
+
+    shareDropdown.innerHTML = '<option value="">-- Select Company --</option>';
+
+    if (!country || !markets[country]) return;
+
+    const companies = markets[country].symbolMap;
+
+    for (let name in companies) {
+        const option = document.createElement("option");
+        option.value = companies[name];
         option.textContent = name;
-        shareTypeSelect.appendChild(option);
-    });
+        shareDropdown.appendChild(option);
+    }
+}
+</script>
+
+      function updateCompanies() {
+    const country = document.getElementById("country").value;
+    const shareDropdown = document.getElementById("shareType");
+
+    // Reset dropdown
+    shareDropdown.innerHTML = '<option value="">-- Select Share Type --</option>';
+
+    // FIX: use COUNTRY_CONFIG (not markets)
+    if (!country || !COUNTRY_CONFIG[country]) return;
+
+    const companies = COUNTRY_CONFIG[country].symbolMap;
+
+    for (let name in companies) {
+        const option = document.createElement("option");
+        option.value = companies[name];
+        option.textContent = name;
+        shareDropdown.appendChild(option);
+    }
+}
 
         // Main analysis function
         async function analyzeStock() {
