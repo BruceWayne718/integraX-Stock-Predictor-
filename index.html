@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -393,7 +394,7 @@
         <div class="input-section">
             <div class="form-group">
                 <label for="country">Select Your Stock Market / Country</label>
-                <select id="country">
+                <select id="shareType"></select>
                     <option value="">-- Choose Country --</option>
                     <option value="1">India (NSE/BSE)</option>
                     <option value="2">USA (NYSE/NASDAQ)</option>
@@ -568,24 +569,32 @@
         let currentConfig = null;
 
         // Update share type dropdown when country changes
-        document.getElementById('country').addEventListener('change', function() {
-            const countryId = this.value;
-            const shareTypeSelect = document.getElementById('shareType');
-            shareTypeSelect.innerHTML = '<option value="">-- Select Share Type --</option>';
-            
-            if (countryId && COUNTRY_CONFIG[countryId]) {
-                currentConfig = COUNTRY_CONFIG[countryId];
-                const symbolMap = currentConfig.symbolMap;
-                
-                for (const [name, symbol] of Object.entries(symbolMap)) {
-                    const option = document.createElement('option');
-                    option.value = symbol;
-                    option.textContent = name;
-                    shareTypeSelect.appendChild(option);
-                }
-            }
-        });
+        
+document.getElementById('country').addEventListener('change', function() {
+    const countryId = this.value;
+    const shareTypeSelect = document.getElementById('shareType');
 
+    // RESET DROPDOWN
+    shareTypeSelect.innerHTML = '<option value="">-- Select Share Type --</option>';
+
+    // FIX: ensure config exists
+    if (!COUNTRY_CONFIG[countryId]) {
+        console.log("Invalid country selected");
+        return;
+    }
+
+    currentConfig = COUNTRY_CONFIG[countryId];
+
+    const symbolMap = currentConfig.symbolMap;
+
+    // FIX: safe loop
+    Object.keys(symbolMap).forEach(name => {
+        const option = document.createElement('option');
+        option.value = symbolMap[name];
+        option.textContent = name;
+        shareTypeSelect.appendChild(option);
+    });
+});
         // Main analysis function
         async function analyzeStock() {
             const country = document.getElementById('country').value;
